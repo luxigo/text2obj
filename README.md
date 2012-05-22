@@ -1,7 +1,7 @@
 text2obj
 ========
 
-Generate a javascript object from a "system_profiler" style textual data structure
+Generate a javascript object or extract data from a "system_profiler" style textual data structure
 
 Example input:
 
