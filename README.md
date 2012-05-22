@@ -9,7 +9,7 @@ Example input:
       System Power Settings:
 
         AC Power:
-         System Sleep Timer (Minutes): 0
+          System Sleep Timer (Minutes): 0
           Disk Sleep Timer (Minutes): 10
           Display Sleep Timer (Minutes): 10
           Sleep On Power Button: Yes
