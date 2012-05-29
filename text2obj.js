@@ -59,15 +59,26 @@ function text2obj(input) {
 		while(input.length) parseLine(input);
 		if (standAlone) {
 			var util=require('util');
-			if (process.argv[3]) {
-				var levels=process.argv[3].replace(/_/g,' ').split('.');
-				var requested=result;
-				levels.forEach(function(prop){
-					requested=requested[prop];
-				})
-				result=requested;
+			if (process.argv.length>3) {
+				var i=3;
+				while (true) {
+					var levels=process.argv[i].split('.');
+					var requested=result;
+					try {
+						levels.forEach(function(prop){
+							requested=requested[prop];
+						});
+						console.log(typeof(requested)=='object'?util.inspect(requested,true,null):requested);
+					} catch(e) {
+						console.log(e);
+					}
+
+					++i;
+					if (i>=process.argv.length) break;
+				}
+			} else {
+				console.log(typeof(result)=='object'?util.inspect(result,true,null):result);
 			}
-			console.log(typeof(result)=='object'?util.inspect(result,true,null):result);
 			process.exit(0);
 		}
 	}
@@ -80,7 +91,7 @@ function parseLine(input) {
 
 	var matches=line.match(/^( *)?([^:]+):(.*)?/);
 	if (DEBUG) console.log(matches);
-	var tag=matches[2];
+	var tag=matches[2].replace(/ /g,'');
 	var col=matches[1]?matches[1].length:0;
 
 	var curLevel=stack[stack.length-1];

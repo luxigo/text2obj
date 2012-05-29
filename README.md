@@ -47,16 +47,17 @@ Example output:
 
 Usage:
 
-     text2obj - | <filename> [ <property_to_extract> ]
+     text2obj - | <filename> [ <property_to_extract> ... ]
      
 
 Note:
-     On the command line, replace spaces with underscores in the property names 
+     On the command line, remove spaces in the property names 
      
 
 Examples:
 
-     system_profiler SPHardwareDataType | text2obj - Hardware.Hardware_Overview.Hardware_UUID
+     system_profiler SPHardwareDataType | text2obj - Hardware.HardwareOverview.HardwareUUID \
+        Software.SystemSoftwareOverview.ComputerName
      
      text2obj system_profile.txt
      
