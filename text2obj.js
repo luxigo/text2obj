@@ -42,7 +42,7 @@ if (module && module.id!='.') {
 		});
 	} else {
 		var input=fs.readFileSync(process.argv[2]);
-		text2obj(input);
+		text2obj(input.toString());
 	}
 }
 
@@ -68,7 +68,7 @@ function text2obj(input) {
 						levels.forEach(function(prop){
 							requested=requested[prop];
 						});
-						console.log(typeof(requested)=='object'?util.inspect(requested,true,null):requested);
+						console.log(typeof(requested)=='object'?util.inspect(requested,false,null):requested);
 					} catch(e) {
 						console.log(e);
 					}
@@ -77,7 +77,7 @@ function text2obj(input) {
 					if (i>=process.argv.length) break;
 				}
 			} else {
-				console.log(typeof(result)=='object'?util.inspect(result,true,null):result);
+				console.log(typeof(result)=='object'?util.inspect(result,false,null):result);
 			}
 			process.exit(0);
 		}
@@ -96,14 +96,24 @@ function parseLine(input) {
 
 	var curLevel=stack[stack.length-1];
 
+	if (DEBUG) console.log(curLevel,col);
 	while (col<=curLevel.col) {
 		stack.pop();
 		curLevel=stack[stack.length-1];
+		if (DEBUG) console.log(curLevel,col);
 	}
 	
 	var value=matches[3];
 	if (value==undefined) {
-		getCurLevelObj()[tag]={};
+		var curLevelObj=getCurLevelObj();
+		if (curLevelObj[tag]==undefined) {
+			curLevelObj[tag]={};
+		} else {
+			if (!Array.isArray(curLevelObj[tag])) {
+				curLevelObj[tag]=[curLevelObj[tag]];
+			}
+			curLevelObj[tag].push({});
+		}
 		stack.push({
 			tag: tag,
 			col: col
@@ -111,7 +121,28 @@ function parseLine(input) {
 
 	} else {
 		var value=value.trim();
-		getCurLevelObj()[tag]=value;
+		var curLevelObj=getCurLevelObj();
+		if (Array.isArray(curLevelObj)) {
+			curLevelObj=curLevelObj[curLevelObj.length-1];
+		}
+
+		switch(typeof(curLevelObj[tag])) {
+			case 'undefined':
+				curLevelObj[tag]=value;
+				break;
+			case 'object':
+				if (Array.isArray(curLevelObj[tag])) {
+					curLevelObj[tag][curLevelObj[tag].length-1][tag]=value;
+					console.log('=====',curLevelObj[tag][curLevelObj[tag].length-1]);
+					return;
+				}
+				// no break;
+			default:
+				curLevelObj[tag]=[curLevelObj[tag]];
+				curLevelObj[tag].push(value);
+				console.log('unhandled',tag,value);
+				break;
+		}
 	}
 }
 
